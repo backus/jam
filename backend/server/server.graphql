@@ -1,0 +1,478 @@
+scalar Date
+
+type AesEncryptedBlob {
+  ciphertext: String!
+  iv: String!
+  salt: String!
+  algorithm: String!
+}
+
+type RsaEncryptedBlob {
+  ciphertext: String!
+  algorithm: String!
+}
+
+enum WaitlistStatus {
+  unverified
+  waiting
+  invited
+  accepted
+}
+
+input AesEncryptedBlobInput {
+  ciphertext: String!
+  iv: String!
+  salt: String!
+  algorithm: String!
+}
+
+input RsaEncryptedBlobInput {
+  ciphertext: String!
+  algorithm: String!
+}
+
+input CreateUserInput {
+  username: String!
+  email: String!
+  avatarUrl: String
+  srpPbkdf2Salt: String!
+  masterKeyPbkdf2Salt: String!
+  srpSalt: String!
+  srpVerifier: String!
+  publicKey: String!
+  encryptedPrivateKey: AesEncryptedBlobInput!
+}
+
+input UpdatePasswordInput {
+  srpPbkdf2Salt: String!
+  masterKeyPbkdf2Salt: String!
+  srpSalt: String!
+  srpVerifier: String!
+  encryptedPrivateKey: AesEncryptedBlobInput!
+}
+
+# Same as CreateUserInput, but no email since it should already be set
+input CreateBetaUserInput {
+  username: String!
+  avatarUrl: String
+  srpPbkdf2Salt: String!
+  masterKeyPbkdf2Salt: String!
+  srpSalt: String!
+  srpVerifier: String!
+  publicKey: String!
+  encryptedPrivateKey: AesEncryptedBlobInput!
+}
+
+input CreateLoginFriendShareInput {
+  id: String!
+  previewKey: RsaEncryptedBlobInput!
+  credentialsKey: RsaEncryptedBlobInput!
+}
+
+input CreateLoginInvitedFriendShareInput {
+  id: String!
+  previewKey: AesEncryptedBlobInput!
+  credentialsKey: AesEncryptedBlobInput!
+}
+
+enum LoginSchemaVersion {
+  v1
+  v0
+}
+
+enum LoginType {
+  raw_credentials
+  browser_state
+}
+
+input CreateLoginInput {
+  credentials: AesEncryptedBlobInput!
+  preview: AesEncryptedBlobInput!
+  credentialsKey: RsaEncryptedBlobInput!
+  previewKey: RsaEncryptedBlobInput!
+  friendShares: [CreateLoginFriendShareInput!]!
+  inviteShares: [CreateLoginInvitedFriendShareInput!]!
+  sharePreviews: Boolean!
+  schemaVersion: LoginSchemaVersion!
+  type: LoginType!
+}
+
+input UpdateLoginInput {
+  id: String!
+  credentials: AesEncryptedBlobInput!
+  preview: AesEncryptedBlobInput!
+  newFriendShares: [CreateLoginFriendShareInput!]!
+  newInviteShares: [CreateLoginInvitedFriendShareInput!]!
+  revokedFriendShares: [String!]!
+  revokedInviteShares: [String!]!
+  sharePreviews: Boolean!
+  schemaVersion: LoginSchemaVersion!
+}
+
+input AcceptInviteAccessKeyInput {
+  id: String!
+  previewKey: RsaEncryptedBlobInput!
+  credentialsKey: RsaEncryptedBlobInput
+}
+
+input AcceptInviteInput {
+  id: String!
+  user: CreateUserInput!
+  accessKeys: [AcceptInviteAccessKeyInput!]!
+}
+
+input AcceptBetaInviteInput {
+  id: String!
+  user: CreateBetaUserInput!
+}
+
+input StartSRPHandshakeInput {
+  email: String!
+  clientPublicEphemeral: String!
+}
+
+input FinishSRPHandshakeInput {
+  id: String!
+  clientProof: String!
+}
+
+input ShareLoginInput {
+  friendId: String!
+  loginId: String!
+  credentialsKey: RsaEncryptedBlobInput!
+  previewKey: RsaEncryptedBlobInput!
+}
+
+input PreshareLoginInput {
+  inviteId: String!
+  loginId: String!
+  credentialsKey: AesEncryptedBlobInput!
+  previewKey: AesEncryptedBlobInput!
+}
+
+input LoginPreviewInput {
+  loginId: String!
+  previewKey: RsaEncryptedBlobInput!
+}
+
+input LoginPreviewsInput {
+  friendId: String!
+  loginPreviewKeys: [LoginPreviewInput!]!
+}
+
+input LoginPreviewForInviteInput {
+  loginId: String!
+  previewKey: AesEncryptedBlobInput!
+}
+
+input LoginPreviewsForInviteInput {
+  inviteId: String!
+  loginPreviewKeys: [LoginPreviewForInviteInput!]!
+}
+
+input ApproveShareRequestInput {
+  id: String!
+  memberId: String!
+  credentialsKey: RsaEncryptedBlobInput!
+}
+
+input CreateInviteInput {
+  phone: String
+  email: String
+  key: RsaEncryptedBlobInput!
+  nickname: String!
+}
+
+input UpdateInviteInput {
+  email: String
+  nickname: String
+}
+
+type Friend {
+  id: String!
+  email: String!
+  username: String!
+  publicKey: String!
+  avatarUrl: String!
+
+  loginPreviewTodos: [MyLogin!]!
+  originalInvite: Invite
+
+  loginsSharedWithThem: [MyLogin!]!
+  loginsSharedWithMe: [SharedLogin!]!
+  loginPreviewsVisibleToThem: [MyLogin!]!
+  loginPreviewsVisibleToMe: [LoginPreviewSummary!]!
+}
+
+type Stranger {
+  id: String!
+  username: String!
+  publicKey: String!
+  avatarUrl: String!
+  createdAt: Date
+}
+
+type PendingOutboundFriendRequest {
+  createdAt: Date!
+  recipient: Stranger!
+  loginPreviewTodos: [MyLogin!]!
+}
+
+enum FindFriendType {
+  outbound_pending
+  inbound_pending
+  friend
+  stranger
+}
+
+type FindFriendResult {
+  status: FindFriendType!
+  inboundFriendRequestId: String
+  user: Stranger!
+}
+
+type PendingInboundFriendRequest {
+  id: String!
+  initiator: Stranger!
+}
+
+type Me {
+  id: String!
+  isInBetaOnboarding: Boolean!
+  createdAt: Date!
+  updatedAt: Date!
+  srpSalt: String!
+  username: String!
+  avatarUrl: String!
+  email: String!
+  publicKey: String!
+  encryptedPrivateKey: AesEncryptedBlob!
+  showOnboardingCard: Boolean!
+  emailVerified: Boolean!
+  forcedPasswordChangeEnabled: Boolean!
+}
+
+type MyLogin {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
+  credentials: AesEncryptedBlob!
+  preview: AesEncryptedBlob!
+  credentialsKey: RsaEncryptedBlob!
+  previewKey: RsaEncryptedBlob!
+  manager: Me!
+  members: [ShareRecipient!]
+  sharePreviews: Boolean!
+  schemaVersion: LoginSchemaVersion!
+  type: LoginType!
+}
+
+type SharedLogin {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
+  credentials: AesEncryptedBlob!
+  preview: AesEncryptedBlob!
+  credentialsKey: RsaEncryptedBlob!
+  previewKey: RsaEncryptedBlob!
+  schemaVersion: LoginSchemaVersion!
+  type: LoginType!
+  manager: Friend!
+  members: [Stranger!]
+}
+
+# We define separate types for the two because resolver logic is different from membership
+union Login = MyLogin | SharedLogin
+
+type SRPStartHandshakeResponse {
+  id: String!
+  srpSalt: String!
+  srpPbkdf2Salt: String!
+  serverPublicEphemeral: String!
+}
+
+type SRPFinishHandshakeResponse {
+  id: String!
+  serverProof: String!
+  sessionWrapper: String!
+  masterKeyPbkdf2Salt: String!
+}
+
+type LoginShare {
+  id: String!
+  manager: Friend!
+  preview: AesEncryptedBlob!
+  previewKey: RsaEncryptedBlob!
+  schemaVersion: LoginSchemaVersion!
+  type: LoginType!
+}
+
+type PotentialShare {
+  friend: ShareRecipient!
+  numSharing: Int!
+}
+
+type Invite {
+  id: String!
+  createdAt: Date
+  nickname: String!
+  email: String
+  key: RsaEncryptedBlob!
+
+  from: Stranger!
+  loginShares(includePreviews: Boolean = true): [InviteLoginShare!]!
+  loginPreviewTodos: [MyLogin!]!
+}
+
+type WaitlistEntry {
+  id: String!
+  email: String!
+  createdAt: Date!
+  unsubscribedAt: Date
+}
+
+union ShareRecipient = Friend | Invite
+
+type AvatarUploadInstructions {
+  avatarUrl: String!
+  uploadUrl: String!
+}
+
+type InviteLoginShare {
+  id: String!
+  preview: AesEncryptedBlob!
+  previewKey: AesEncryptedBlob!
+  credentialsKey: AesEncryptedBlob
+
+  schemaVersion: LoginSchemaVersion!
+  type: LoginType!
+}
+
+type LoginPreviewTodo {
+  friendId: String!
+  publicKey: String!
+  loginIds: [String!]!
+}
+
+type LoginPreviewTodoList {
+  todo: [LoginPreviewTodo!]!
+  logins: [MyLogin!]!
+}
+
+type MyLoginSummary {
+  id: String!
+  createdAt: Date!
+  credentials: AesEncryptedBlob!
+  credentialsKey: RsaEncryptedBlob!
+  schemaVersion: LoginSchemaVersion!
+  type: LoginType!
+}
+
+type SharedLoginSummary {
+  id: String!
+  createdAt: Date!
+  credentials: AesEncryptedBlob!
+  credentialsKey: RsaEncryptedBlob!
+  schemaVersion: LoginSchemaVersion!
+  type: LoginType!
+  manager: Friend!
+}
+
+type LoginShareRequest {
+  id: String!
+  preview: AesEncryptedBlob!
+  previewKey: RsaEncryptedBlob!
+  credentialsKey: RsaEncryptedBlob!
+  schemaVersion: LoginSchemaVersion!
+  type: LoginType!
+  member: Friend!
+}
+
+type LoginPreviewSummary {
+  id: String!
+  createdAt: Date!
+  accessRequested: Boolean!
+  preview: AesEncryptedBlob!
+  previewKey: RsaEncryptedBlob!
+  schemaVersion: LoginSchemaVersion!
+  type: LoginType!
+  manager: Friend!
+}
+
+type LoginTransfer {
+  id: String!
+  credentials: AesEncryptedBlob!
+  credentialsKey: RsaEncryptedBlob!
+}
+
+enum MagicLinkPulseState {
+  activating
+  success
+  fail
+}
+
+type Query {
+  time: Date!
+  me: Me!
+  friends: [Friend!]!
+  friend(id: String!): Friend
+  invites: [Invite!]!
+  pendingInboundFriendRequests: [PendingInboundFriendRequest!]!
+  pendingInboundFriendRequest(id: String!): PendingInboundFriendRequest!
+  pendingOutboundFriendRequests: [PendingOutboundFriendRequest!]!
+  login(id: String!): Login!
+  myLogins: [MyLoginSummary!]!
+  loginsSharedWithMe: [SharedLoginSummary!]!
+  loginPreviews: [LoginPreviewSummary!]!
+  pendingLoginShares: [LoginShare!]!
+  potentialShares(id: String): [PotentialShare!]!
+  getAvatarUploadUrl: AvatarUploadInstructions!
+  findFriends(search: String!): [FindFriendResult!]!
+  invite(id: String!): Invite!
+  sessionWrapper: String!
+  loginPreviewTodo: LoginPreviewTodoList!
+  loginPreview(id: String!): LoginPreviewSummary!
+  loginShareRequests: [LoginShareRequest!]!
+  waitlistEntry(id: String!): WaitlistEntry
+  isUsernameAvailable(username: String!): Boolean!
+  isEmailAvailable(email: String!): Boolean!
+}
+
+type Mutation {
+  addFriend(userId: String!): Boolean
+  acceptFriendRequest(id: String!): Boolean
+  rejectFriendRequest(requestId: String!): Boolean
+  unfriend(id: String!): Boolean
+  createUser(params: CreateUserInput!): Me!
+  updatePassword(params: UpdatePasswordInput!): Boolean!
+  updateAccount(username: String, avatarUrl: String): Boolean!
+  acceptInvite(params: AcceptInviteInput!): Me!
+  acceptBetaInvite(params: AcceptBetaInviteInput!): Me!
+  createLogin(params: CreateLoginInput!): MyLogin!
+  updateLogin(params: UpdateLoginInput!): Boolean!
+  deleteLogin(id: String!): Boolean!
+  deleteInvite(id: String!): Boolean!
+  acceptLoginShare(loginId: String!): Boolean!
+  rejectLoginShare(id: String!): Boolean!
+  startSRPHandshake(params: StartSRPHandshakeInput!): SRPStartHandshakeResponse!
+  finishSRPHandshake(
+    params: FinishSRPHandshakeInput!
+  ): SRPFinishHandshakeResponse!
+  signOut: Boolean!
+  shareLogin(params: ShareLoginInput!): Boolean!
+  preshareLogin(params: PreshareLoginInput!): Boolean!
+  createInvite(params: CreateInviteInput!): String!
+  updateInvite(id: String!, changes: UpdateInviteInput!): Boolean!
+  dismissOnboardingCard: Boolean!
+  verifyEmail(id: String!): Boolean!
+  joinWaitlist(email: String!, firstName: String!): WaitlistStatus!
+  unsubscribeFromWaitlist(id: String!): Boolean!
+  confirmWaitlist(secret: String!): WaitlistStatus!
+  publishLoginPreviews(params: LoginPreviewsInput!): Boolean!
+  publishLoginPreviewsForInvite(params: LoginPreviewsForInviteInput!): Boolean!
+  requestLoginShare(id: String!): Boolean!
+  approveShareRequest(params: ApproveShareRequestInput!): Boolean!
+  rejectShareRequest(id: String!, memberId: String!): Boolean!
+  finishBetaOnboarding: Boolean!
+  recordMagicLinkUsage(id: String!, state: MagicLinkPulseState!): Boolean!
+}

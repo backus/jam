@@ -1,0 +1,66 @@
+<mjml>
+  <mj-head>
+    <mj-font name="Azo Sans" href="https://use.typekit.net/tet6emj.css" />
+  </mj-head>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-image padding="0" src="{{email_header_url}}" />
+      </mj-column>
+    </mj-section>
+    <mj-section>
+      <mj-column>
+        <mj-text
+          font-size="28px"
+          font-weight="900"
+          font-family="Azo Sans, Arial, sans-serif"
+          align="center"
+          color="#555a60"
+          >Secure your spot!</mj-text
+        >
+      </mj-column>
+    </mj-section>
+    <mj-section>
+      <mj-column width="450px">
+        <mj-text
+          font-size="18px"
+          line-height="1.53"
+          font-family="Azo Sans, Arial, sans-serif"
+          align="center"
+          color="#555a60"
+          >Hi {{first_name}}. Click this link to confirm your email and join the
+          Jam waiting list:</mj-text
+        >
+      </mj-column>
+    </mj-section>
+    <mj-section>
+      <mj-column>
+        <mj-button
+          href="{{verification_url}}"
+          width="300px"
+          height="60px"
+          border-radius="5px"
+          background-color="#F253CF"
+          font-size="24px"
+          font-family="Azo Sans, Arial, sans-serif"
+          >Confirm my email</mj-button
+        >
+      </mj-column>
+    </mj-section>
+    <mj-section>
+      <mj-column width="450px">
+        <mj-text
+          font-size="16px"
+          font-style="italic"
+          line-height="1.53"
+          font-family="Azo Sans, Arial, sans-serif"
+          align="center"
+          color="#555a60"
+          >You received this email because someone added your email to the
+          waiting list on <a href="https://jam.link/">Jam</a>. If you didn't do
+          that, feel free to ignore this email.</mj-text
+        >
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

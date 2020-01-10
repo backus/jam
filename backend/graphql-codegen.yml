@@ -1,0 +1,23 @@
+overwrite: true
+schema: "http://localhost:5000/graphql"
+documents:
+  - "./../react-app/src/api.graphql"
+  - "server/server.graphql"
+generates:
+  server/resolvers.ts:
+    plugins:
+      - "typescript"
+      - "typescript-resolvers"
+      - add:
+          content: "import { DeepPartial } from 'utility-types';"
+    config:
+      defaultMapper: DeepPartial<{T}>
+      # @see https://git.io/JU0xa
+      useIndexSignature: true
+config:
+  avoidOptionals: false
+  contextType: ./server#GraphQLContext
+  allowParentTypeOverride: true
+hooks:
+  afterAllFileWrite:
+    - ./../bin/prettier

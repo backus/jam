@@ -1,0 +1,30 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Install client dependencies
+        run: cd react-app && yarn
+
+      - name: Assert prettier is in sync
+        run: bin/prettier && git diff --exit-code
+
+      - name: Typecheck server
+        run: cd backend && ./node_modules/.bin/tsc --version && ./node_modules/.bin/tsc --project tsconfig.json --noEmit
+
+      - name: Typecheck client
+        run: |
+          cd react-app
+          ./node_modules/.bin/tsc --version && ./node_modules/.bin/tsc --project tsconfig.json --noEmit

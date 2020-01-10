@@ -1,0 +1,25 @@
+#!/bin/bash
+
+source './bin/strict-mode.sh'
+
+# Compile our backend TypeScript to JS
+(
+  cd backend || exit 1
+  yarn build
+)
+
+# Compile our CRA bundle
+(
+  cd react-app || exit 1
+  yarn
+  yarn build
+)
+
+# Copy the bundle into our backend's public directory
+cp -a ./react-app/build/. ./backend/public/
+
+# Copy the public directory into the newly created backend build
+cp -r backend/public/ backend/build/public
+
+# Rename so we don't autoserve this
+mv backend/build/public/index.html backend/build/public/app.html

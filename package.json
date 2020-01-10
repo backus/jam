@@ -1,0 +1,37 @@
+{
+  "name": "jam",
+  "version": "0.1.0",
+  "private": true,
+  "proxy": "http://localhost:5000/",
+  "workspaces": [
+    "backend",
+    "react-app",
+    "extension"
+  ],
+  "dependencies": {
+    "prettier": "^2.0.5"
+  },
+  "scripts": {
+    "start": "cd backend && yarn start",
+    "worker": "cd backend && yarn worker",
+    "dev-client": "cd react-app && yarn start",
+    "dev-extension": "cd extension && yarn start",
+    "heroku-postbuild": "bin/heroku-postbuild"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {}
+}

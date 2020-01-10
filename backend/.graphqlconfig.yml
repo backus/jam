@@ -1,0 +1,10 @@
+projects:
+  frontend:
+    schemaPath: react-app/src/api.graphql
+    includes: ["**/*.graphql"]
+    extensions:
+      endpoints:
+        default: http://localhost:5000
+  db:
+    schemaPath: server/server.graphql
+    includes: ["**/*.graphql"]

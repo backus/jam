@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# This file should be in the project root's bin directory.
+# We need to know the project root so we can 
+PROJECT_ROOT="$(dirname $(dirname $(readlink -f $0)))"
+
+# Ensure we use the prettier binary from the server's dependencies
+# This is important since bin/graphql-codegen calls this file from the react-app subdirectory
+PRETTIER_BIN="$PROJECT_ROOT/node_modules/.bin/prettier"
+
+function list-prettier-files() {
+  git ls-files -- *.{yml,tsx,ts,mjml,md,json,js,html,graphql,css}
+}
+
+# Support passing in a short list of files
+if [ "$#" -eq "0" ]; then
+  files="$(list-prettier-files | tr "\n" " ")"
+else
+  files="$@"
+fi
+
+$PRETTIER_BIN --write -- $files

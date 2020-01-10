@@ -1,0 +1,80 @@
+[
+  {
+    "q": "What is Jam?",
+    "a": [
+      "Jam is a tool for sharing login details for other websites and services. Jam is a kind of password manager, with a focus on friends. "
+    ]
+  },
+  {
+    "q": "I lost my password. How do I recover my account?",
+
+    "a": [
+      "Unfortunately, Jam doesn’t support password resets right now. Jam is different from other websites. We use your password to encrypt all of the data that you add and your friends share with you. If we could change your password, that would mean we could access your data.",
+
+      "In the future, we will introduce features for reducing the pain of losing your password. In the meantime, you can create a new account if you want to keep using Jam."
+    ]
+  },
+
+  {
+    "q": "Does Jam have access to the passwords I add for other services?",
+
+    "a": [
+      "No.",
+      "Any login information you save on Jam is encrypted using your password. Jam doesn’t know your master password (the one you log in with) and that means it can’t read or modify the data you save on the website."
+    ]
+  },
+
+  {
+    "q": "Does Jam know what services I’m sharing?",
+
+    "a": [
+      "No.",
+      "Just like the passwords you save, all metadata associated with the logins you save are locally encrypted on your machine and Jam can’t read them."
+    ]
+  },
+
+  {
+    "q": "Why is almost everything encrypted?",
+
+    "a": [
+      "The websites you visit and the passwords you use to access them are at the core of your life on the internet. The websites a person visits are deeply personal to them. Your passwords are critical to keeping you safe online.",
+      "The fact that this data is deeply personal and safety critical is why everything is encrypted. We don’t want to spy on you. We don’t want others spying on you. So it’s best if we can’t see what websites you use. Likewise, we don’t want to put your security at risk, and the best way to make sure we won’t leak your passwords is to make sure we don’t even have that data in the first place. That way, our servers aren’t a target for hackers, because they don’t contain copies of private information worth stealing. "
+    ]
+  },
+
+  {
+    "q": "Am I allowed to share my login for [insert service here] on Jam?",
+
+    "a": [
+      "For every service, this question always depends on who you want to share with and what the service’s policy is on sharing. You should consult the terms and conditions of the service you want to share."
+    ]
+  },
+  {
+    "q": "Does Jam sell my data?",
+
+    "a": [
+      "No.",
+      "Most of the data you save on Jam is fully encrypted, meaning Jam couldn’t even sell that data if it wanted to. The data we do have (your email, your username, the avatar you upload, who you are friends with) is private."
+    ]
+  },
+  {
+    "q": "Is Jam for bypassing paywalls?",
+    "a": [
+      "No. If you aren’t allowed to share access to a site, then you aren’t allowed to use Jam to send your login information to others. It’s our mission to help people share the things they’re allowed to share – not the things they aren’t."
+    ]
+  },
+  {
+    "q": "What should I do if I see something illegal on Jam?",
+    "a": [
+      "Contact us immediately. It’s our goal to build a safe place for legal password sharing, not a platform for illegal activity.",
+      "Since our users are the only ones who can see what is being shared, we’re counting on them to do the right thing. If you see criminal activity on the platform, let us know so we can take action."
+    ]
+  },
+  {
+    "q": "How does Jam make money?",
+
+    "a": [
+      "Right now, we don’t. We're focused on making Jam easy to use, fun, and secure."
+    ]
+  }
+]

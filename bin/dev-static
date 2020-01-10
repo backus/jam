@@ -1,0 +1,8 @@
+#!/bin/bash
+
+source './bin/strict-mode.sh'
+source './bin/shared/ts-node-dev-instance.sh'
+
+cd static
+
+ts-node-dev-instance 9231 index.ts

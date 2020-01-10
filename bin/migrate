@@ -1,0 +1,9 @@
+#!/bin/bash
+
+source './bin/strict-mode.sh'
+
+NODE_ENV=${NODE_ENV:-DEVELOPMENT}
+
+cd backend
+
+node_modules/.bin/sequelize db:migrate

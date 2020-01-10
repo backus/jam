@@ -1,0 +1,121 @@
+#!/usr/bin/env node
+
+const { promisify } = require("util");
+const exec = promisify(require("child_process").exec);
+const fs = require("fs");
+
+const _ = require("lodash");
+const { program } = require("commander");
+
+const cli = () => {
+  program
+    .requiredOption(
+      "--env <environment>",
+      'App environment ("staging" or "production")'
+    )
+    .option("--enable-source-maps", "Compile source maps for debugging", false)
+    .option(
+      "--env-override <json>",
+      "Environment variables to overwrite",
+      "{}"
+    );
+
+  program.on("--help", () => {
+    console.log("");
+    console.log(`Example:
+
+# Building for staging, but override backend host var so messaging works locally
+$ bin/build-prod-extension \\
+    --env=staging \\
+    --enable-source-maps \\
+    --env-override='{"REACT_APP_BACKEND_HOST": "http://localhost:3000/"}'`);
+  });
+
+  program.parse(process.argv);
+
+  if (program.env !== "staging" && program.env !== "production") {
+    throw new Error("Expected --env to be production or staging");
+  }
+
+  return {
+    env: program.env,
+    sourceMaps: program.enableSourceMaps,
+    envOverride: JSON.parse(program.envOverride),
+  };
+};
+
+const buildEnv = async () => {
+  const conf = cli();
+
+  const herokuApp = conf.env === "production" ? "jam-link" : "jam-link-staging";
+
+  const { stdout, stderr } = await exec(
+    `heroku config --json --app ${herokuApp}`
+  );
+
+  const data = JSON.parse(stdout);
+
+  if (_.isEmpty(data)) {
+    console.warn(stderr);
+    console.warn();
+    throw new Error(`No data output from heroku config?`);
+  }
+
+  const reactAppConf = _.pickBy(data, (_, key) => key.startsWith("REACT_APP_"));
+  console.log(reactAppConf);
+
+  Object.entries(conf.envOverride).forEach(([key, value]) => {
+    if (!(key in reactAppConf)) {
+      throw new Error(
+        `Override ${key} not in react config pulled from ${herokuApp}`
+      );
+    }
+
+    if (reactAppConf[key] === value)
+      throw new Error(
+        `Superfluous env override for ${key}. Value is identical to value on ${herokuApp}`
+      );
+
+    reactAppConf[key] = value;
+  });
+
+  return {
+    ...reactAppConf,
+    NODE_ENV: "production",
+    ENABLE_SOURCE_MAPS: conf.sourceMaps ? "true" : "false",
+  };
+};
+
+const runAndPrint = async (cmd, env) => {
+  const { stdout, stderr } = await exec(cmd, {
+    env: { ...process.env, ...env },
+  });
+
+  console.log(`${cmd} -- stdout:`);
+  console.log(stdout);
+
+  if (!_.isEmpty(stderr)) {
+    console.warn(`${cmd} -- stderr:`);
+    console.warn(stderr);
+  }
+};
+
+const main = async () => {
+  const env = await buildEnv();
+  process.chdir("./extension");
+
+  if (fs.existsSync("./build")) {
+    console.log("Deleting existing build dir");
+    fs.rmdirSync("./build", { recursive: true });
+  }
+
+  await runAndPrint("yarn build", env);
+  const extensionVersion = JSON.parse(fs.readFileSync("package.json")).version;
+  const zipFilename = `jam-v${extensionVersion}.zip`;
+  await runAndPrint(`zip -r jam.zip build`, env);
+  process.chdir("..");
+  fs.copyFileSync("./extension/jam.zip", zipFilename);
+  fs.unlinkSync("./extension/jam.zip");
+};
+
+main();

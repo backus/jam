@@ -1,0 +1,39 @@
+#!/bin/bash
+
+source './bin/strict-mode.sh'
+
+DB="jam-dev"
+
+num_connections() {
+  local query="select COUNT(*) from pg_stat_activity where datname = '$DB'";
+  local count="$(psql --tuples-only --command "$query")"
+  echo "${count//[[:space:]]/}"
+}
+
+wait_for_no_connections() {
+  if [ "$(num_connections)" -eq "0" ]; then
+    return 0;
+  fi
+
+  local last_count=$(num_connections)
+
+  printf "Waiting for $last_count connections to disconnect"
+  while [ "$(num_connections)" -ne "0" ]; do
+    printf .
+    sleep 0.1
+  done
+
+  echo "!"
+}
+
+if [ "$(pgrep -f "psql $DB")" ]; then
+  echo "Found psql connections open to $DB. Killing..."
+  pkill -f "psql $DB"
+fi
+
+wait_for_no_connections
+
+dropdb "$DB"
+createdb "$DB"
+bin/migrate
+psql "$DB" < db/dev.sql

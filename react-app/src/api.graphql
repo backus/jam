@@ -1,0 +1,749 @@
+mutation CreateUser($params: CreateUserInput!) {
+  createUser(params: $params) {
+    id
+    email
+    createdAt
+    updatedAt
+  }
+}
+
+mutation UpdatePassword($params: UpdatePasswordInput!) {
+  updatePassword(params: $params)
+}
+
+mutation StartSRPHandshake($params: StartSRPHandshakeInput!) {
+  startSRPHandshake(params: $params) {
+    id
+    srpSalt
+    srpPbkdf2Salt
+    serverPublicEphemeral
+  }
+}
+
+mutation FinishSRPHandshake($params: FinishSRPHandshakeInput!) {
+  finishSRPHandshake(params: $params) {
+    id
+    serverProof
+    sessionWrapper
+    masterKeyPbkdf2Salt
+  }
+}
+
+mutation SignOut {
+  signOut
+}
+
+fragment aesEncryptedBlobFields on AesEncryptedBlob {
+  ciphertext
+  iv
+  salt
+  algorithm
+}
+
+fragment rsaEncryptedBlobFields on RsaEncryptedBlob {
+  ciphertext
+  algorithm
+}
+
+fragment shareRecipientFields on ShareRecipient {
+  kind: __typename
+  ... on Friend {
+    id
+    name: username
+    avatarUrl
+    publicKey
+  }
+  ... on Invite {
+    id
+    name: nickname
+    dataKey: key {
+      ciphertext
+      algorithm
+    }
+  }
+}
+
+query MySessionWrapper {
+  sessionWrapper
+}
+
+query GetTime {
+  time
+}
+
+mutation CreateNewLogin($params: CreateLoginInput!) {
+  createLogin(params: $params) {
+    id
+    credentials {
+      ...aesEncryptedBlobFields
+    }
+    credentialsKey {
+      ...rsaEncryptedBlobFields
+    }
+    schemaVersion
+  }
+}
+
+mutation UpdateLogin($params: UpdateLoginInput!) {
+  updateLogin(params: $params)
+}
+
+mutation UpdateAccount($username: String, $avatarUrl: String) {
+  updateAccount(username: $username, avatarUrl: $avatarUrl)
+}
+
+mutation DeleteInvite($id: String!) {
+  deleteInvite(id: $id)
+}
+
+mutation DeleteLogin($id: String!) {
+  deleteLogin(id: $id)
+}
+
+mutation AcceptLoginShare($loginId: String!) {
+  acceptLoginShare(loginId: $loginId)
+}
+
+mutation RejectLoginShare($id: String!) {
+  rejectLoginShare(id: $id)
+}
+
+query GetLoginsOverview {
+  mine: myLogins {
+    id
+    createdAt
+    credentials {
+      ...aesEncryptedBlobFields
+    }
+    credentialsKey {
+      ...rsaEncryptedBlobFields
+    }
+    type
+    schemaVersion
+  }
+  shared: loginsSharedWithMe {
+    id
+    createdAt
+    credentials {
+      ...aesEncryptedBlobFields
+    }
+    credentialsKey {
+      ...rsaEncryptedBlobFields
+    }
+    manager {
+      username
+      avatarUrl
+    }
+    type
+    schemaVersion
+  }
+  previews: loginPreviews {
+    id
+    createdAt
+    preview {
+      ...aesEncryptedBlobFields
+    }
+    previewKey {
+      ...rsaEncryptedBlobFields
+    }
+    manager {
+      username
+      avatarUrl
+    }
+    type
+    schemaVersion
+  }
+}
+
+query GetMe {
+  me {
+    id
+    isInBetaOnboarding
+    createdAt
+    updatedAt
+    srpSalt
+    username
+    avatarUrl
+    email
+    publicKey
+    encryptedPrivateKey {
+      ...aesEncryptedBlobFields
+    }
+    showOnboardingCard
+    emailVerified
+    forcedPasswordChangeEnabled
+  }
+}
+
+query GetLoginKeys($id: String!) {
+  login(id: $id) {
+    ... on MyLogin {
+      credentialsKey {
+        ...rsaEncryptedBlobFields
+      }
+      previewKey {
+        ...rsaEncryptedBlobFields
+      }
+    }
+    ... on SharedLogin {
+      credentialsKey {
+        ...rsaEncryptedBlobFields
+      }
+      previewKey {
+        ...rsaEncryptedBlobFields
+      }
+    }
+  }
+}
+
+query GetLogin($id: String!) {
+  login(id: $id) {
+    ... on MyLogin {
+      id
+      createdAt
+      updatedAt
+      credentials {
+        ...aesEncryptedBlobFields
+      }
+      credentialsKey {
+        ...rsaEncryptedBlobFields
+      }
+      previewKey {
+        ...rsaEncryptedBlobFields
+      }
+      schemaVersion
+      type
+      manager {
+        id
+        username
+        avatarUrl
+      }
+      members {
+        ...shareRecipientFields
+      }
+      sharePreviews
+    }
+    ... on SharedLogin {
+      id
+      createdAt
+      updatedAt
+      credentials {
+        ...aesEncryptedBlobFields
+      }
+      credentialsKey {
+        ...rsaEncryptedBlobFields
+      }
+      previewKey {
+        ...rsaEncryptedBlobFields
+      }
+      schemaVersion
+      type
+      manager {
+        id
+        username
+        avatarUrl
+      }
+      members {
+        kind: __typename
+        id
+        name: username
+        avatarUrl
+        publicKey
+      }
+    }
+  }
+}
+
+query GetLoginPreview($id: String!) {
+  loginPreview(id: $id) {
+    id
+    createdAt
+    accessRequested
+    preview {
+      ...aesEncryptedBlobFields
+    }
+    previewKey {
+      ...rsaEncryptedBlobFields
+    }
+    schemaVersion
+    type
+    manager {
+      id
+      username
+      avatarUrl
+    }
+  }
+}
+
+query MyFriends {
+  friends {
+    id
+    username
+    email
+    publicKey
+    avatarUrl
+  }
+}
+
+query GetPotentialShares($id: String) {
+  potentialShares(id: $id) {
+    friend {
+      ...shareRecipientFields
+    }
+    numSharing
+  }
+}
+
+query GetAvatarUploadUrl {
+  getAvatarUploadUrl {
+    avatarUrl
+    uploadUrl
+  }
+}
+
+query GetNotifications {
+  loginShares: pendingLoginShares {
+    id
+    manager {
+      username
+      avatarUrl
+    }
+    preview {
+      ...aesEncryptedBlobFields
+    }
+    previewKey {
+      ...rsaEncryptedBlobFields
+    }
+    schemaVersion
+    type
+  }
+
+  friendRequests: pendingInboundFriendRequests {
+    id
+    initiator {
+      id
+      username
+      publicKey
+      avatarUrl
+      createdAt
+    }
+  }
+
+  shareRequests: loginShareRequests {
+    id
+    preview {
+      ...aesEncryptedBlobFields
+    }
+    previewKey {
+      ...rsaEncryptedBlobFields
+    }
+    credentialsKey {
+      ...rsaEncryptedBlobFields
+    }
+    schemaVersion
+    type
+    member {
+      id
+      username
+      avatarUrl
+      publicKey
+    }
+  }
+}
+
+query GetPendingLoginShares {
+  pendingLoginShares {
+    id
+    manager {
+      username
+      avatarUrl
+    }
+    preview {
+      ...aesEncryptedBlobFields
+    }
+    previewKey {
+      ...rsaEncryptedBlobFields
+    }
+  }
+}
+
+query GetPendingInboundFriendRequest($id: String!) {
+  pendingInboundFriendRequest(id: $id) {
+    id
+  }
+}
+
+query GetPendingInboundFriendRequests {
+  pendingInboundFriendRequests {
+    id
+    initiator {
+      id
+      username
+      publicKey
+      avatarUrl
+      createdAt
+    }
+  }
+}
+
+query FindFriends($search: String!) {
+  findFriends(search: $search) {
+    status
+    inboundFriendRequestId
+    user {
+      id
+      username
+      avatarUrl
+      createdAt
+      publicKey
+    }
+  }
+}
+
+query GetInvite($id: String!) {
+  invite(id: $id) {
+    from {
+      id
+      username
+      publicKey
+      avatarUrl
+      createdAt
+    }
+    loginShares {
+      id
+      preview {
+        ...aesEncryptedBlobFields
+      }
+      previewKey {
+        ...aesEncryptedBlobFields
+      }
+      credentialsKey {
+        ...aesEncryptedBlobFields
+      }
+
+      schemaVersion
+      type
+    }
+  }
+}
+
+query GetSocialGraph {
+  invites {
+    id
+    createdAt
+    nickname
+    key {
+      ...rsaEncryptedBlobFields
+    }
+  }
+
+  friends {
+    id
+    username
+    avatarUrl
+
+    loginsSharedWithThem {
+      id
+      preview {
+        ...aesEncryptedBlobFields
+      }
+      previewKey {
+        ...rsaEncryptedBlobFields
+      }
+      schemaVersion
+      type
+    }
+
+    loginsSharedWithMe {
+      id
+      preview {
+        ...aesEncryptedBlobFields
+      }
+      previewKey {
+        ...rsaEncryptedBlobFields
+      }
+      schemaVersion
+      type
+    }
+
+    loginPreviewsVisibleToThem {
+      id
+      preview {
+        ...aesEncryptedBlobFields
+      }
+      previewKey {
+        ...rsaEncryptedBlobFields
+      }
+      schemaVersion
+      type
+    }
+
+    loginPreviewsVisibleToMe {
+      id
+      preview {
+        ...aesEncryptedBlobFields
+      }
+      previewKey {
+        ...rsaEncryptedBlobFields
+      }
+      schemaVersion
+      type
+    }
+  }
+}
+
+query GetFriendWithShareGraph($id: String!) {
+  friend(id: $id) {
+    id
+    username
+    avatarUrl
+
+    loginsSharedWithThem {
+      id
+      preview {
+        ...aesEncryptedBlobFields
+      }
+      previewKey {
+        ...rsaEncryptedBlobFields
+      }
+      schemaVersion
+      type
+    }
+
+    loginsSharedWithMe {
+      id
+      preview {
+        ...aesEncryptedBlobFields
+      }
+      previewKey {
+        ...rsaEncryptedBlobFields
+      }
+      schemaVersion
+      type
+    }
+
+    loginPreviewsVisibleToThem {
+      id
+      preview {
+        ...aesEncryptedBlobFields
+      }
+      previewKey {
+        ...rsaEncryptedBlobFields
+      }
+      schemaVersion
+      type
+    }
+
+    loginPreviewsVisibleToMe {
+      id
+      preview {
+        ...aesEncryptedBlobFields
+      }
+      previewKey {
+        ...rsaEncryptedBlobFields
+      }
+      schemaVersion
+      type
+    }
+  }
+}
+
+query GetLoginPreviewTodo {
+  friends {
+    id
+    publicKey
+    invite: originalInvite {
+      id
+      key {
+        ...rsaEncryptedBlobFields
+      }
+      loginShares(includePreviews: false) {
+        id
+        previewKey {
+          ...aesEncryptedBlobFields
+        }
+        credentialsKey {
+          ...aesEncryptedBlobFields
+        }
+      }
+    }
+    logins: loginPreviewTodos {
+      id
+      previewKey {
+        ...rsaEncryptedBlobFields
+      }
+    }
+  }
+
+  friendRequests: pendingOutboundFriendRequests {
+    recipient {
+      id
+      publicKey
+    }
+    logins: loginPreviewTodos {
+      id
+      previewKey {
+        ...rsaEncryptedBlobFields
+      }
+    }
+  }
+
+  invites {
+    id
+    key {
+      ...rsaEncryptedBlobFields
+    }
+    logins: loginPreviewTodos {
+      id
+      previewKey {
+        ...rsaEncryptedBlobFields
+      }
+    }
+  }
+}
+
+query GetBetaOnboarding {
+  logins: myLogins {
+    id
+    createdAt
+    credentials {
+      ciphertext
+      iv
+      salt
+      algorithm
+    }
+    credentialsKey {
+      ciphertext
+      algorithm
+    }
+    schemaVersion
+    type
+  }
+
+  invites {
+    id
+    nickname
+    email
+    key {
+      ...rsaEncryptedBlobFields
+    }
+
+    loginShares {
+      id
+    }
+  }
+}
+
+query GetWaitlistEntry($id: String!) {
+  waitlistEntry(id: $id) {
+    createdAt
+    email
+    unsubscribedAt
+  }
+}
+
+query IsUsernameAvailable($username: String!) {
+  available: isUsernameAvailable(username: $username)
+}
+
+query IsEmailAvailable($email: String!) {
+  available: isEmailAvailable(email: $email)
+}
+
+mutation ApproveShareRequest($params: ApproveShareRequestInput!) {
+  approveShareRequest(params: $params)
+}
+
+mutation RejectShareRequest($id: String!, $memberId: String!) {
+  rejectShareRequest(id: $id, memberId: $memberId)
+}
+
+mutation RequestLoginShare($id: String!) {
+  requestLoginShare(id: $id)
+}
+
+mutation PublishLoginPreviews($params: LoginPreviewsInput!) {
+  publishLoginPreviews(params: $params)
+}
+
+mutation PublishLoginPreviewsForInvite($params: LoginPreviewsForInviteInput!) {
+  publishLoginPreviewsForInvite(params: $params)
+}
+
+mutation ShareLogin($params: ShareLoginInput!) {
+  shareLogin(params: $params)
+}
+
+mutation PreshareLogin($params: PreshareLoginInput!) {
+  preshareLogin(params: $params)
+}
+
+mutation AddFriend($userId: String!) {
+  addFriend(userId: $userId)
+}
+
+mutation AcceptFriendRequest($id: String!) {
+  acceptFriendRequest(id: $id)
+}
+
+mutation RejectFriendRequest($requestId: String!) {
+  rejectFriendRequest(requestId: $requestId)
+}
+
+mutation Unfriend($id: String!) {
+  unfriend(id: $id)
+}
+
+mutation CreateInvite($params: CreateInviteInput!) {
+  createInvite(params: $params)
+}
+
+mutation UpdateInvite($id: String!, $changes: UpdateInviteInput!) {
+  updateInvite(id: $id, changes: $changes)
+}
+
+mutation DismissOnboardingCard {
+  dismissOnboardingCard
+}
+
+mutation AcceptInvite($params: AcceptInviteInput!) {
+  acceptInvite(params: $params) {
+    id
+    email
+    createdAt
+    updatedAt
+  }
+}
+
+mutation AcceptBetaInvite($params: AcceptBetaInviteInput!) {
+  acceptBetaInvite(params: $params) {
+    id
+    email
+    createdAt
+    updatedAt
+  }
+}
+
+mutation VerifyEmail($id: String!) {
+  verifyEmail(id: $id)
+}
+
+mutation UnsubscribeFromWaitlist($id: String!) {
+  success: unsubscribeFromWaitlist(id: $id)
+}
+
+mutation JoinWaitlist($email: String!, $firstName: String!) {
+  joinWaitlist(email: $email, firstName: $firstName)
+}
+
+mutation ConfirmWaitlist($secret: String!) {
+  confirmWaitlist(secret: $secret)
+}
+
+mutation FinishBetaOnboarding {
+  finishBetaOnboarding
+}
+
+mutation RecordMagicLinkUsage($id: String!, $state: MagicLinkPulseState!) {
+  recordMagicLinkUsage(id: $id, state: $state)
+}

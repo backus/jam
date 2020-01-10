@@ -1,0 +1,31 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-text font-size="14px" color="#222222"
+          >{{greeting}} I'm reaching out to share your Jam invite with you:
+          <a href="{{beta_invite_url}}">{{beta_invite_url}}</a></mj-text
+        >
+
+        <mj-text font-size="14px" color="#222222"
+          >You joined Jam's waiting list {{time_since_waitlist}} ago, so, in
+          case you forgot, Jam is a new service for sharing accounts with
+          friends.</mj-text
+        >
+
+        <mj-text font-size="14px" color="#222222"
+          >Anyways, Jam is very new, so I'm thrilled you took an early interest.
+          If you have any feedback, you can reach me at this email. 😊</mj-text
+        >
+
+        <mj-text font-size="14px" color="#222222">Thanks,<br />John</mj-text>
+
+        <mj-text font-size="14px" color="#222222"
+          >P.S. If you definitely didn't add your email to the waiting list,
+          <a style="color: #134394;" href="{{unsubscribe_url}}">click here</a
+          >.</mj-text
+        >
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

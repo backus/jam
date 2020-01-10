@@ -1,0 +1,35 @@
+#!/bin/bash
+
+source './bin/strict-mode.sh'
+
+# Kill our process and all of our child processes upon ctrl+c.
+trap "exit" INT TERM ERR
+trap "kill 0" EXIT
+
+wait_for_server() {
+  printf "Waiting for server to respond on port 5000"
+  until $(curl --output /dev/null --silent -I http://localhost:5000); do
+      printf '.'
+      sleep 0.25
+  done
+}
+
+redis-server &
+bin/dev-server &
+bin/dev-worker &
+# A bug in react-scripts 3.4.1 broke backgrounded jobs. Workaround: https://git.io/JfXHx
+BROWSER=none yarn dev-client | cat - &
+yarn dev-extension &
+bin/react-storybook &
+
+# GraphQL Codegen dumps errors instantly if server isn't up. Let's keep output clean...
+wait_for_server
+bin/graphql-codegen --watch &
+
+wait %1
+wait %2
+wait %3
+wait %4
+wait %5
+wait %6
+wait %7

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+function ts-node-dev() {
+  # --rs false configures ts-node-dev to not bind to stdin
+  # see: https://www.karltarvas.com/2020/05/31/ts-node-dev-binds-to-stdin-via-readline-by-default.html
+  NODE_OPTIONS=--experimental-repl-await ./node_modules/.bin/ts-node-dev --rs false "$@"
+}
+
+ts-node-dev \
+  -P tsconfig.json \
+  -O '{"module":"commonjs", "target":"es6"}' \
+  -r tsconfig-paths/register ./bin/console.ts

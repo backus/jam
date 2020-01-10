@@ -1,0 +1,16 @@
+#!/bin/bash
+
+source './bin/strict-mode.sh'
+
+# Kill our process and all of our child processes upon ctrl+c.
+trap "exit" INT TERM ERR
+trap "kill 0" EXIT
+
+cd backend
+yarn run graphql-codegen "$@" &
+
+cd ../react-app
+yarn run graphql-codegen "$@" &
+
+wait %1
+wait %2

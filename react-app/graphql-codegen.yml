@@ -1,0 +1,15 @@
+overwrite: true
+schema: "http://localhost:5000/graphql"
+documents:
+  - "src/api.graphql"
+generates:
+  src/api/graphql.ts:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-graphql-request"
+config:
+  avoidOptionals: true
+hooks:
+  afterAllFileWrite:
+    - ./../bin/prettier

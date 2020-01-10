@@ -1,0 +1,12 @@
+#!/bin/bash
+
+INPUT="src/types/schema.ts"
+OUTPUT="src/types/index.ts"
+
+cd react-app
+
+./node_modules/.bin/quicktype --src-lang typescript -l typescript -o "$OUTPUT" "$INPUT"
+
+cd ..
+
+bin/prettier "react-app/$OUTPUT"

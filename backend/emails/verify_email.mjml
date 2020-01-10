@@ -1,0 +1,47 @@
+<mjml>
+  <mj-body>
+    <mj-section
+      background-color="#877EEF"
+      background-repeat="repeat"
+      padding="20px 0"
+      text-align="center"
+    >
+      <mj-column>
+        <mj-text
+          align="center"
+          color="#ffffff"
+          font-weight="bold"
+          font-family="Arial, sans-serif"
+          font-size="32px"
+          line-height="50px"
+          >👋 Ready to Jam?</mj-text
+        >
+      </mj-column>
+    </mj-section>
+    <mj-section>
+      <mj-column>
+        <mj-text align="left" font-size="16px" padding-top="30px"
+          >Hey @{{username}}, ready to Jam? Click here to verify your email:
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section>
+      <mj-column>
+        <mj-button
+          align="center"
+          background-color="#F253CF"
+          font-size="24px"
+          border-radius="5px"
+          color="#fff"
+          border-radius="24px"
+          href="{{verify_url}}"
+          font-weight="bold"
+          font-family="Arial, sans-serif, Helvetica, Arial, sans-serif"
+          padding-bottom="45px"
+          padding-top="10px"
+          >Verify me!!</mj-button
+        >
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

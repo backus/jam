@@ -1,0 +1,70 @@
+<mjml>
+  <mj-head>
+    <mj-font name="Azo Sans" href="https://use.typekit.net/tet6emj.css" />
+  </mj-head>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-image padding="0" src="{{email_header_url}}" />
+      </mj-column>
+    </mj-section>
+    <mj-section>
+      <mj-column>
+        <mj-text
+          font-size="28px"
+          font-weight="900"
+          font-family="Azo Sans, Arial, sans-serif"
+          align="center"
+          color="#555a60"
+          >🎉 {{sender_username}} wants to share!</mj-text
+        >
+      </mj-column>
+    </mj-section>
+    <mj-section>
+      <mj-group width="300px">
+        <mj-column width="50%">
+          <mj-image
+            src="{{sender_avatar_url}}"
+            width="128px"
+            padding="0"
+            border-radius="100px"
+          ></mj-image>
+        </mj-column>
+        <mj-column width="50%">
+          <mj-image
+            src="{{share_account_icon_url}}"
+            width="128px"
+            padding="0"
+            border-radius="100px"
+          ></mj-image>
+        </mj-column>
+      </mj-group>
+    </mj-section>
+    <mj-section>
+      <mj-column width="450px">
+        <mj-text
+          font-size="16px"
+          font-family="Azo Sans, Arial, sans-serif"
+          align="center"
+          color="#555a60"
+          >How exciting! {{sender_username}} just shared a login with you. I
+          wonder what it is...
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section>
+      <mj-column>
+        <mj-button
+          href="{{notifications_url}}"
+          width="300px"
+          height="60px"
+          border-radius="5px"
+          background-color="#F253CF"
+          font-size="24px"
+          font-family="Azo Sans, Arial, sans-serif"
+          >🎁 Open my present</mj-button
+        >
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
